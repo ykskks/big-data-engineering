@@ -131,11 +131,11 @@ def runApriori(data_iter, minSupport, minLift):
             for element in _subsets:
                 remain = item.difference(element)
                 if len(remain) > 0:
-                    #confidence = getSupport(item)/getSupport(element)
-                    lift = getSupport(item) / getSupport(element) 
-                    if confidence >= minConfidence:
+                    confidence = getSupport(item)/getSupport(element)
+                    lift = confidence  / getSupport(element)
+                    if lift >= minLift:
                         toRetRules.append(((tuple(element), tuple(remain)),
-                                           confidence))
+                                           lift))
     return toRetItems, toRetRules
 
 
