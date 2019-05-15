@@ -80,7 +80,7 @@ def getItemSetTransactionList(data_iterator):
     return itemSet, transactionList
 
 
-def runApriori(data_iter, minSupport, minLift):
+def runApriori(data_iter, minSupport, maxKulc):
     """
     run the apriori algorithm. data_iter is a record iterator
     Return both:
@@ -131,11 +131,10 @@ def runApriori(data_iter, minSupport, minLift):
             for element in _subsets:
                 remain = item.difference(element)
                 if len(remain) > 0:
-                    confidence = getSupport(item)/getSupport(element)
-                    lift = confidence  / getSupport(remain)
-                    if lift >= minLift:
+                    kulc = (getSupport(item)/getSupport(element) + getSupport(item)/getSupport(remain)) * (1/2)
+                    if kulc < maxKulc:
                         toRetRules.append(((tuple(element), tuple(remain)),
-                                           lift))
+                                           kulc))
     return toRetItems, toRetRules
 
 
@@ -146,9 +145,9 @@ def printResults(items, rules):
         print("item: %s , %.3f" % (str(item), support))
     print("\n------------------------ RULES:")
     rule_list = sorted(rules, key=lambda x: x[1])
-    for rule, confidence in rule_list:
+    for rule, kulc in rule_list:
         pre, post = rule
-        print("Rule: %s ==> %s , %.3f" % (str(pre), str(post), confidence))
+        print("Rule: %s ==> %s , %.3f" % (str(pre), str(post), kulc))
 
 
 def dataFromFile(fname):
@@ -179,10 +178,10 @@ if __name__ == "__main__":
                          default=0.6,
                          type='float')
     """
-    optparser.add_option('-l', '--minLift',
-                         dest='minL',
-                         help='minimum lift value',
-                         default=0.1,
+    optparser.add_option('-k', '--maxKulc',
+                         dest='maxK',
+                         help='max kulc value',
+                         default=0.01,
                          type='float')
 
     (options, args) = optparser.parse_args()
@@ -198,8 +197,8 @@ if __name__ == "__main__":
 
     minSupport = options.minS
     #minConfidence = options.minC
-    minLift = options.minL
+    maxKulc = options.maxK
 
-    items, rules = runApriori(inFile, minSupport, minLift)
+    items, rules = runApriori(inFile, minSupport, maxKulc)
 
     printResults(items, rules)
