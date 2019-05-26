@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Description
 
@@ -26,9 +24,11 @@ def dataFromFile(fname):
         """Function which reads from the file and yields a generator"""
         file_iter = open(fname, 'rU')
         for line in file_iter:
-                line = line.strip().rstrip(',')                         # Remove trailing comma
+                line = line.strip().rstrip(',')    # Remove trailing comma
                 record = line.split(',')
                 yield record
+
+
 if __name__ == '__main__':
 
     optparser = OptionParser()
@@ -57,17 +57,13 @@ if __name__ == '__main__':
             sys.exit('System will exit')
     eps = options.eps
     minPoints = options.minPoints
-##################
-#    pred は以下のようなリストが期待されます
-#    [1,0,0,2,1,0]
-#    この場合、要素の一つ目がクラスタ1に、二つ目がクラスタ0に属していることを意味しています
-##################
+
     feature=[]
     for record in inFile:
         feature.append(list(map(float,record)))
     pred = clustering(feature,eps,minPoints)
 
-#plot nodes
+    #plot nodes
     plt.title("dbscan with e={} and m={}".format(eps, minPoints))
     x=[]
     y=[]
